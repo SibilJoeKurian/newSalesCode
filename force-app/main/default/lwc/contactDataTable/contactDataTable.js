@@ -1,5 +1,6 @@
-import { LightningElement } from 'lwc';
+import { LightningElement,wire } from 'lwc';
 import getContactData from '@salesforce/apex/contactDataTableController.getContactData';
+
 //Name,Phone,Email
 const columns = [
     { label: 'name', fieldName: 'name' },
@@ -10,11 +11,21 @@ const columns = [
 export default class ContactDataTable extends LightningElement {
     columns = columns;
     data;
-    connectedCallback() {
-        getContactData().then((data) => {
+    @wire(getContactData)
+    wiredData({error,data}){
+        if (data) {
             let result = JSON.parse(data);
             this.data = result;
-            alert('::: result ' + JSON.stringify(result))
-        }).catch(e=>console.log(e))
+        } else if (error) {
+            console.log(error);
+            this.error = error;
+        }
+    }
+    connectedCallback() {
+        // getContactData().then((data) => {
+        //     let result = JSON.parse(data);
+        //     this.data = result;
+        //     alert('::: result ' + JSON.stringify(result))
+        // }).catch(e=>console.log(e))
     }
 }
